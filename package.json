@@ -1,0 +1,26 @@
+{
+  "name": "discordbot-battlemetrics",
+  "version": "0.1.0",
+  "description": "Discord bot displaying server info provided by battlemetrics website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tripayou/discordbot-battlemetrics.git"
+  },
+  "keywords": [
+    "discordbot"
+  ],
+  "author": "Tripayou",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Tripayou/discordbot-battlemetrics/issues"
+  },
+  "homepage": "https://github.com/Tripayou/discordbot-battlemetrics#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "unirest": "^0.6.0"
+  }
+}
