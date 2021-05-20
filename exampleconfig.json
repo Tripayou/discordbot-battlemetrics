@@ -1,3 +1,8 @@
 {
-    "token" : "InsertYourTokenHere"
+    "token" : "InsertYourTokenHere",
+    "serverID" : "InsertIdHere",
+    "serverName" : "My CS:GO server",
+    "guildID" : "InsertIdHere",
+    "prefix" : "!",
+    "refreshInterval" : 30
 }

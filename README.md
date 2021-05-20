@@ -19,19 +19,17 @@ Visit https://discordapp.com/developers/applications/ and create a bot to obtain
 - Install dependencies:</br>
 `npm install`
 - Edit configuration to your needs like described below.
-- Run app localy or use a process manager like [PM2](https://pm2.keymetrics.io/).
+
+Run app localy or use a process manager like [PM2](https://pm2.keymetrics.io/).
 
 ## Configuration
 
 Edit `exampleconfig.json` by the following and save it as `config.json`.</br>
-If you use [PM2](https://pm2.keymetrics.io/) (recommanded) to manage bots you will also need to edit index.js and modify line 8 :</br>
+If you use [PM2](https://pm2.keymetrics.io/) (recommanded) to manage bots you will also need to edit index.js and modify line 11 :</br>
 modify `const config = require('./config.json')` to `const config = require('/absolute/path/to/config.json')`.
 
 - token</br>
 Your bot token, provided by Discord.
-
-- prefix</br>
-Prefix for `srvinfo` command.
 
 - serverID</br>
 Your server id provided by battlemetrics, visible in your server url, e.g. https://www.battlemetrics.com/servers/csgo/12345678 : "12345678" is your id.
@@ -40,7 +38,10 @@ Your server id provided by battlemetrics, visible in your server url, e.g. https
 Your server name used to set bot activity status.
 
 - guildID</br>
-Your guild/discord server id. Use Discord developer mode to find it.
+Your guild/discord server id, use Discord developer mode to find it.
+
+- prefix</br>
+Prefix for `srvinfo` command.
 
 - refreshInterval</br>
 In seconds, interval to update server presence informations.
