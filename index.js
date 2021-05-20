@@ -21,7 +21,37 @@ function changeMemberStatus(member) {
     unirest.get(`https://api.battlemetrics.com/servers/${config.serverID}`).end(res => {
         // Response OK
         if (res.status === 200) {
-            console.log(`Response Status = ${res.status}`);
+            // Server Online
+            if (res.body.data.attributes.status === 'online') {
+                // Player count has changed since last call
+                if (lastPlayerCount !== res.body.data.attributes.players) {
+                    member.setNickname(`Ingame: ${res.body.data.attributes.players} / ${res.body.data.attributes.maxPlayers}`)
+                    .catch((error) => {
+                        console.log('ERROR : failed to set nickname');
+                        console.error(error);
+                    });
+
+                    lastPlayerCount = res.body.data.attributes.players;
+                }
+            }
+            // Server Offline
+            else {
+                member.setNickname('Server offline')
+                .catch((error) => {
+                    console.log('ERROR : failed to set nickname');
+                    console.error(error);
+                });
+
+                if (lastPlayerCount !== null) lastPlayerCount = null;
+            }
+
+            // Update bot activity if necessary
+            if (thisBot.user.presence.activities[0].name !== config.serverName) {
+                thisBot.user.setActivity(config.serverName).catch((error) => {
+                    console.log('ERROR : failed to set activity')
+                    console.error(error)
+                })
+            }
         }
         // API call failed
         else {
