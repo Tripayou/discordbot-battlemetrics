@@ -25,8 +25,8 @@ Run app localy or use a process manager like [PM2](https://pm2.keymetrics.io/).
 ## Configuration
 
 Edit `exampleconfig.json` by the following and save it as `config.json`.</br>
-If you use [PM2](https://pm2.keymetrics.io/) (recommanded) to manage bots you will also need to edit index.js and modify line 11 :</br>
-modify `const config = require('./config.json')` to `const config = require('/absolute/path/to/config.json')`.
+If you use [PM2](https://pm2.keymetrics.io/) (recommanded) to manage bots you will also need to edit index.js and modify line 12 :</br>
+modify `require('./config.json')` to `require('/absolute/path/to/discordbot-battlemetrics/config.json')`.
 
 - token</br>
 Your bot token, provided by Discord.

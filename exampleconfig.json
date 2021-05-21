@@ -4,5 +4,5 @@
     "serverName" : "My CS:GO server",
     "guildID" : "InsertIdHere",
     "prefix" : "!",
-    "refreshInterval" : 30
+    "refreshInterval" : 2
 }

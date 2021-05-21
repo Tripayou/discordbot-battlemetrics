@@ -1,6 +1,7 @@
 /*
     discordbot-battlemetrics
     index.js
+    Tripayou © 2021
 */
 
 
@@ -45,19 +46,35 @@ function changeMemberStatus(member) {
                 if (lastPlayerCount !== null) lastPlayerCount = null;
             }
 
-            // Update bot activity if necessary
+            // Update bot activity (server name) if necessary
+            // setActivity available only for client, not for guild member
             if (thisBot.user.presence.activities[0].name !== config.serverName) {
                 thisBot.user.setActivity(config.serverName).catch((error) => {
-                    console.log('ERROR : failed to set activity')
-                    console.error(error)
-                })
+                    console.log('ERROR : failed to set activity');
+                    console.error(error);
+                });
             }
         }
         // API call failed
         else {
-            console.log(`ERROR : Response Status = ${res.status}`);
+            console.log(`ERROR : battlemetrics API returned code ${res.status}`);
+
+            // Reset bot name to default and display 'no data' message on 1st fail
+            if (thisBot.user.presence.activities[0].name !== 'no data') {
+                member.setNickname('').catch((error) => {
+                    console.log('ERROR : failed to set nickname');
+                    console.error(error);
+                });
+
+                thisBot.user.setActivity('no data').catch((error) => {
+                    console.log('ERROR : failed to set activity');
+                    console.error(error);
+                });
+            }
         }
     });
+
+    return;
 }
 
 
@@ -65,11 +82,11 @@ function changeMemberStatus(member) {
 thisBot.on('ready', () => {
     console.log('connected');
 
-    // Define bot as a member to be able to change its name and status
+    // Define bot as a member to be able to change its name
     botAsMember = thisBot.guilds.cache.find(guild => guild.id === config.guildID).member(thisBot.user);
     
-    // Clean activity on startup
-    thisBot.user.setActivity('Connexion ...').catch((error) => {
+    // Set activity on startup
+    thisBot.user.setActivity('Connection ...').catch((error) => {
         console.log('ERROR : failed to set activity');
         console.error(error);
     });
