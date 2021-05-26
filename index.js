@@ -22,19 +22,31 @@ const refreshInterval = 2;
 // Error message, displayed when bot is in error status
 const errorMsg = 'no data';
 
+// Max API fails before displaying error message
+// Sometimes API returns code 5XX
+// Set error status only if consecutives fails
+const maxApiFails = 3;
+
 
 /************************
 *    Global variables
 ************************/
 
+// Used to compare player count between 2 calls
 let lastPlayerCount = null;
+
+// API fails count
+let iFails = 0;
+
+// Bot status to avoid unnecessary Discord API calls
+let errorStatus = false;
 
 
 /*****************
 *    Functions
 *****************/
 
-// Calls battlemetrics api and modify bot name and status depending on response
+// Calls battlemetrics API and modify bot name and status depending on response
 function changeMemberStatus(member) {
     unirest.get(`https://api.battlemetrics.com/servers/${config.serverID}`)
     .end(res => {
@@ -73,25 +85,34 @@ function changeMemberStatus(member) {
                     console.error(error);
                 });
             }
+
+            // Reset fails count
+            if (iFails > 0) iFails = 0;
         }
         // API call failed
         else {
             console.log(`ERROR : battlemetrics API returned code ${res.status}`);
 
+            if (iFails < maxApiFails) iFails++;
+
             // Set bot to error status
             // Reset bot name to default and display error message
-            if (thisBot.user.presence.activities[0].name !== errorMsg) {
-                member.setNickname('')
-                .catch((error) => {
-                    console.log('ERROR : failed to set nickname');
-                    console.error(error);
-                });
+            if (iFails === maxApiFails && errorStatus === false) {
+                errorStatus = true;
 
-                thisBot.user.setActivity(errorMsg)
-                .catch((error) => {
-                    console.log('ERROR : failed to set activity');
-                    console.error(error);
-                });
+                if (thisBot.user.presence.activities[0].name !== errorMsg) {
+                    member.setNickname('')
+                    .catch((error) => {
+                        console.log('ERROR : failed to set nickname');
+                        console.error(error);
+                    });
+
+                    thisBot.user.setActivity(errorMsg)
+                    .catch((error) => {
+                        console.log('ERROR : failed to set activity');
+                        console.error(error);
+                    });
+                }
             }
         }
     });
