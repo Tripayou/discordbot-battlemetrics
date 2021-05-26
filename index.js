@@ -38,9 +38,6 @@ let lastPlayerCount = null;
 // API fails count
 let iFails = 0;
 
-// Bot status to avoid unnecessary Discord API calls
-let errorStatus = false;
-
 
 /*****************
 *    Functions
@@ -97,9 +94,7 @@ function changeMemberStatus(member) {
 
             // Set bot to error status
             // Reset bot name to default and display error message
-            if (iFails === maxApiFails && errorStatus === false) {
-                errorStatus = true;
-
+            if (iFails === maxApiFails) {
                 if (thisBot.user.presence.activities[0].name !== errorMsg) {
                     member.setNickname('')
                     .catch((error) => {
