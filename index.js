@@ -38,6 +38,12 @@ let lastPlayerCount = null;
 // API fails count
 let iFails = 0;
 
+// Store data for info message
+let data = null;
+
+// Color for embed message
+let color = null;
+
 
 /*****************
 *    Functions
@@ -85,6 +91,8 @@ function changeMemberStatus(member) {
 
             // Reset fails count
             if (iFails > 0) iFails = 0;
+
+            data = res.body.data;
         }
         // API call failed
         else {
@@ -93,8 +101,8 @@ function changeMemberStatus(member) {
             if (iFails < maxApiFails) iFails++;
 
             // Set bot to error status
-            // Reset bot name to default and display error message
             if (iFails === maxApiFails) {
+                // Reset bot name to default and display error message
                 if (thisBot.user.presence.activities[0].name !== errorMsg) {
                     member.setNickname('')
                     .catch((error) => {
@@ -108,6 +116,8 @@ function changeMemberStatus(member) {
                         console.error(error);
                     });
                 }
+
+                data = null;
             }
         }
     });
@@ -139,11 +149,82 @@ thisBot.on('ready', () => {
         console.log('ERROR : failed to set activity');
         console.error(error);
     });
- 
+
+    // Update bot status in right panel
     changeMemberStatus(botAsMember);
      
     setInterval(() => {
         changeMemberStatus(botAsMember);
     }, refreshInterval * 1000);
 })
+
+
+.on('message', message => {
+    // Filter messages
+    if (message.author.bot) return;
+    if (message.content.indexOf(config.prefix) !== 0) return;
+
+    
+    if (message.content === config.prefix + config.command) {
+        // Set color for embed message
+        // error = red
+        if (data === null)
+            color = 16711680;
+        else {
+            // online = green
+            if (data.attributes.status === 'online')
+                color = 43520;
+            // offline = yellow
+            else
+                color = 16768768;
+        }
+
+        // Base message
+        const embed = new Discord.MessageEmbed()
+        .setColor(color)
+        .setFooter('discordbot-battlemetrics © 2021', thisBot.user.avatarURL())
+        .setTitle(config.serverName);
+
+        if (data !== null) {
+            // Add data to base message
+            embed.addFields({
+                name: 'Server name',
+                value: data.attributes.name
+            },
+            {
+                name: 'Address',
+                value: `${data.attributes.ip}:${data.attributes.port}`
+            },
+            {
+                name: 'Players',
+                value: `${data.attributes.players}/${data.attributes.maxPlayers}`
+            });
+
+            if (data.attributes.details.hasOwnProperty('map')) embed.addField('Current map', `${data.attributes.details.map}`);
+            
+            embed.addFields({
+                name: 'Battlemetrics rank',
+                value: data.attributes.rank
+            },
+            {
+                name: 'Status',
+                value: data.attributes.status
+            });
+
+        }
+        else embed.addField('Error !', 'no data to display');
+
+        message.channel.send(embed)
+        .then(() => {
+            return;
+        })
+        .catch((error) => {
+            console.log('ERROR : failed to send message');
+            console.error(error);
+            return;
+        });
+    }
+})
+
+
 .login(config.token);
