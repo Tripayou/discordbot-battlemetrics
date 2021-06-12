@@ -15,6 +15,9 @@ const config = require('./config.json');
 
 const thisBot = new Discord.Client();
 
+// Enable/disable logs
+const verbose = false;
+
 // In seconds, interval between API calls
 // If set to 1, API returns code 429 (rate limit error)
 const refreshInterval = 2;
@@ -61,8 +64,10 @@ function changeMemberStatus(member) {
                 if (lastPlayerCount !== res.body.data.attributes.players) {
                     member.setNickname(`Ingame: ${res.body.data.attributes.players} / ${res.body.data.attributes.maxPlayers}`)
                     .catch((error) => {
-                        console.log('ERROR : failed to set nickname');
-                        console.error(error);
+                        if (verbose) {
+                            console.log('ERROR : failed to set nickname');
+                            console.error(error);
+                        }
                     });
 
                     lastPlayerCount = res.body.data.attributes.players;
@@ -72,8 +77,10 @@ function changeMemberStatus(member) {
             else {
                 member.setNickname('Server offline')
                 .catch((error) => {
-                    console.log('ERROR : failed to set nickname');
-                    console.error(error);
+                    if (verbose) {
+                        console.log('ERROR : failed to set nickname');
+                        console.error(error);
+                    }
                 });
 
                 if (lastPlayerCount !== null) lastPlayerCount = null;
@@ -84,8 +91,10 @@ function changeMemberStatus(member) {
             if (thisBot.user.presence.activities[0].name !== config.serverName) {
                 thisBot.user.setActivity(config.serverName)
                 .catch((error) => {
-                    console.log('ERROR : failed to set activity');
-                    console.error(error);
+                    if (verbose) {
+                        console.log('ERROR : failed to set activity');
+                        console.error(error);
+                    }
                 });
             }
 
@@ -115,7 +124,7 @@ function changeMemberStatus(member) {
         }
         // API call failed
         else {
-            console.log(`ERROR : battlemetrics API returned code ${res.status}`);
+            if (verbose) console.log(`ERROR : battlemetrics API returned code ${res.status}`);
 
             if (iFails < maxApiFails) iFails++;
 
@@ -125,14 +134,18 @@ function changeMemberStatus(member) {
                 if (thisBot.user.presence.activities[0].name !== errorMsg) {
                     member.setNickname('')
                     .catch((error) => {
-                        console.log('ERROR : failed to set nickname');
-                        console.error(error);
+                        if (verbose) {
+                            console.log('ERROR : failed to set nickname');
+                            console.error(error);
+                        }
                     });
 
                     thisBot.user.setActivity(errorMsg)
                     .catch((error) => {
-                        console.log('ERROR : failed to set activity');
-                        console.error(error);
+                        if (verbose) {
+                            console.log('ERROR : failed to set activity');
+                            console.error(error);
+                        }
                     });
                 }
 
@@ -151,7 +164,7 @@ function changeMemberStatus(member) {
 
 
 thisBot.on('ready', () => {
-    console.log('connected');
+    if (verbose) console.log('connected');
 
     // Define bot as a member to be able to change its name
     let botAsMember = thisBot.guilds.cache.find(guild => guild.id === config.guildID).member(thisBot.user);
@@ -159,14 +172,18 @@ thisBot.on('ready', () => {
     // Set activity on startup and reset name
     botAsMember.setNickname('')
     .catch((error) => {
-        console.log('ERROR : failed to set nickname');
-        console.error(error);
+        if (verbose) {
+            console.log('ERROR : failed to set nickname');
+            console.error(error);
+        }
     });
 
     thisBot.user.setActivity('Connection ...')
     .catch((error) => {
-        console.log('ERROR : failed to set activity');
-        console.error(error);
+        if (verbose) {
+            console.log('ERROR : failed to set activity');
+            console.error(error);
+        }
     });
 
     // Update bot status in right panel
@@ -235,8 +252,11 @@ thisBot.on('ready', () => {
             return;
         })
         .catch((error) => {
-            console.log('ERROR : failed to send message');
-            console.error(error);
+            if (verbose) {
+                console.log('ERROR : failed to send message');
+                console.error(error);
+            }
+
             return;
         });
     }
