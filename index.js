@@ -92,7 +92,26 @@ function changeMemberStatus(member) {
             // Reset fails count
             if (iFails > 0) iFails = 0;
 
-            data = res.body.data;
+            // Store data
+            // Create data object
+            if (data === null) {
+                data = {name: res.body.data.attributes.name,
+                    ip: res.body.data.attributes.ip,
+                    port: res.body.data.attributes.port,
+                    players: res.body.data.attributes.players,
+                    maxPlayers: res.body.data.attributes.maxPlayers,
+                    rank: res.body.data.attributes.rank,
+                    status: res.body.data.attributes.status};
+                
+                if (res.body.data.attributes.details.hasOwnProperty('map')) data.map = res.body.data.attributes.details.map;
+            }
+            // Update data
+            else {
+                Object.keys(data).forEach(key => {
+                    if (key === 'map') data[key] = res.body.data.attributes.details.map;
+                    else if (data[key] !== res.body.data.attributes[key]) data[key] = res.body.data.attributes[key];
+                });
+            }
         }
         // API call failed
         else {
@@ -168,15 +187,12 @@ thisBot.on('ready', () => {
     if (message.content === config.prefix + config.command) {
         // Set color for embed message
         // error = red
-        if (data === null)
-            color = 16711680;
+        if (data === null) color = 16711680;
         else {
             // online = green
-            if (data.attributes.status === 'online')
-                color = 43520;
+            if (data.status === 'online') color = 43520;
             // offline = yellow
-            else
-                color = 16768768;
+            else color = 16768768;
         }
 
         // Base message
@@ -189,26 +205,26 @@ thisBot.on('ready', () => {
             // Add data to base message
             embed.addFields({
                 name: 'Server name',
-                value: data.attributes.name
+                value: data.name
             },
             {
                 name: 'Address',
-                value: `${data.attributes.ip}:${data.attributes.port}`
+                value: `${data.ip}:${data.port}`
             },
             {
                 name: 'Players',
-                value: `${data.attributes.players}/${data.attributes.maxPlayers}`
+                value: `${data.players}/${data.maxPlayers}`
             });
 
-            if (data.attributes.details.hasOwnProperty('map')) embed.addField('Current map', `${data.attributes.details.map}`);
+            if (data.hasOwnProperty('map') && data.status === 'online') embed.addField('Current map', `${data.map}`);
             
             embed.addFields({
                 name: 'Battlemetrics rank',
-                value: data.attributes.rank
+                value: data.rank
             },
             {
                 name: 'Status',
-                value: data.attributes.status
+                value: data.status
             });
 
         }
