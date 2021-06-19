@@ -15,12 +15,12 @@ const config = require('./config.json');
 
 const thisBot = new Discord.Client();
 
-// Enable/disable logs
+// Boolean : enable/disable logs
 const verbose = false;
 
 // In seconds, interval between API calls
 // If set to 1, API returns code 429 (rate limit error)
-const refreshInterval = 2;
+const refreshInterval = config.instances + 0.1;
 
 // Error message, displayed when bot is in error status
 const errorMsg = 'no data';
@@ -52,7 +52,7 @@ let color = null;
 *    Functions
 *****************/
 
-// Calls battlemetrics API and modify bot name and status depending on response
+// Call battlemetrics API and modify bot name and status depending on response
 function changeMemberStatus(member) {
     unirest.get(`https://api.battlemetrics.com/servers/${config.serverID}`)
     .end(res => {

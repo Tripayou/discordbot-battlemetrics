@@ -1,8 +1,9 @@
 {
     "token" : "InsertYourTokenHere",
     "serverID" : "InsertIdHere",
-    "serverName" : "My CS:GO server",
+    "serverName" : "Your server name",
     "guildID" : "InsertIdHere",
     "prefix" : "!",
-    "command" : "srvinfo"
+    "command" : "srvinfo",
+    "instances" : 1
 }
